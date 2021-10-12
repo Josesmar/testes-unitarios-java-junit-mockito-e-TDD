@@ -11,7 +11,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -26,19 +30,24 @@ import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoServiceTest {
 	
+	private LocacaoService service;			
+	
 	@Rule
 	public ErrorCollector erro = new ErrorCollector();
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
+	@Before
+	public void setup() {				
+		service = new LocacaoService();		
+	}		
 	
 	@Test
 	public void testeLocacao() throws Exception {
-		//cenário
-		LocacaoService service = new LocacaoService();
+		//cenário		
 		Usuario usuario = new Usuario("Josesmar");
-		Filme filme = new Filme("Filme 1", 2, 5.0);		
+		Filme filme = new Filme("Filme 1", 2, 5.0);				
 		
 		//ação
 		Locacao locacao = service.alugarFilme(usuario, filme);
@@ -55,8 +64,7 @@ public class LocacaoServiceTest {
 	
 	@Test(expected = FilmeSemEstoqueException.class) //Esperado excecao "Filme sem estoque
 	public void testLocacao_filmeSemEstoque() throws Exception{
-		//cenário
-		LocacaoService service = new LocacaoService();
+		//cenário		
 		Usuario usuario = new Usuario("Josesmar");
 		Filme filme = new Filme("Filme 1", 0, 5.0);			
 		
@@ -68,8 +76,7 @@ public class LocacaoServiceTest {
 	
 	@Test
 	public void testeLocacao_usuarioVazio() throws FilmeSemEstoqueException {
-		//cenário
-		LocacaoService service = new LocacaoService();
+		//cenário		
 		Filme filme = new Filme("Filme 2", 1, 4.0);		
 		
 		//ação
@@ -79,14 +86,11 @@ public class LocacaoServiceTest {
 		} catch (LocadoraException e) {
 			Assert.assertThat(e.getMessage(), is("Usuario vazio"));
 		}
-
-		System.out.println("Forma robusta");
 	}
 	
 	@Test
 	public void testeLocacao_FilmeVazio() throws FilmeSemEstoqueException, LocadoraException {
-		//cenário
-		LocacaoService service = new LocacaoService();
+		//cenário		
 		Usuario usuario = new Usuario("Josesmar");				
 		
 		exception.expect(LocadoraException.class);
@@ -95,8 +99,6 @@ public class LocacaoServiceTest {
 		//ação
 		service.alugarFilme(usuario, null);
 	
-		
-		System.out.println("Forma Nova");
 	}
 	
 }

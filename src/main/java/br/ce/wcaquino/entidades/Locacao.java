@@ -34,10 +34,19 @@ public class Locacao {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
+<<<<<<< Updated upstream
 	public Filme getFilme() {
 		return filme;
 	}
 	public void setFilme(Filme filme) {
 		this.filme = filme;
+=======
+	public List<Filme> getFilmes() {
+		return filmes;
 	}
+	public void setFilmes(List<Filme> filmes) {
+		this.filmes = filmes;
+>>>>>>> Stashed changes
+	}
+	
 }

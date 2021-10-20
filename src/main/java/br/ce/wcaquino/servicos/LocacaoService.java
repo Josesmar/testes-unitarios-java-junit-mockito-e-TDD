@@ -32,7 +32,7 @@ public class LocacaoService {
 		}		
 		
 		Locacao locacao = new Locacao();
-		locacao.setFilme(filme);
+
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
 		locacao.setValor(filme.getPrecoLocacao());

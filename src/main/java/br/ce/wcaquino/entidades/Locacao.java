@@ -1,6 +1,7 @@
 package br.ce.wcaquino.entidades;
 
 import java.util.Date;
+import java.util.List;
 
 public class Locacao {
 
@@ -9,6 +10,7 @@ public class Locacao {
 	private Date dataLocacao;
 	private Date dataRetorno;
 	private Double valor;
+	private List<Filme> filmes;
 	
 	public Usuario getUsuario() {
 		return usuario;
@@ -34,19 +36,15 @@ public class Locacao {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
-<<<<<<< Updated upstream
-	public Filme getFilme() {
-		return filme;
-	}
-	public void setFilme(Filme filme) {
-		this.filme = filme;
-=======
 	public List<Filme> getFilmes() {
 		return filmes;
 	}
 	public void setFilmes(List<Filme> filmes) {
 		this.filmes = filmes;
->>>>>>> Stashed changes
+	}
+	public void setFilme(List<Filme> filmes2) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

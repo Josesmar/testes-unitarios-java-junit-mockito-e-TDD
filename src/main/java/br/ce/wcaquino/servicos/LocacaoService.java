@@ -4,6 +4,7 @@ import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -14,29 +15,6 @@ import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoService {
 	
-<<<<<<< Updated upstream
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws FilmeSemEstoqueException, LocadoraException {
-
-		
-		if (usuario == null) {
-			throw new LocadoraException("Usuario vazio");
-		}
-		
-		if (filme == null) {
-			throw new LocadoraException("Filme vazio");
-		}
-		
-		if(filme.getEstoque() == 0) {
-			throw new FilmeSemEstoqueException();
-		}		
-		
-		Locacao locacao = new Locacao();
-		locacao.setFilme(filme);
-		locacao.setUsuario(usuario);
-		locacao.setDataLocacao(new Date());
-		locacao.setValor(filme.getPrecoLocacao());
-
-=======
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 		if(usuario == null) {
 			throw new LocadoraException("Usuario vazio");
@@ -53,7 +31,7 @@ public class LocacaoService {
 		}
 		
 		Locacao locacao = new Locacao();
-		locacao.setFilmes(filmes);
+		locacao.setFilme(filmes);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
 		Double valorTotal = 0d;
@@ -70,7 +48,6 @@ public class LocacaoService {
 		}
 		locacao.setValor(valorTotal);
 		
->>>>>>> Stashed changes
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
 		dataEntrega = adicionarDias(dataEntrega, 1);

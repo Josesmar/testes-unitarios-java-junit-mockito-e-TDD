@@ -44,6 +44,7 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
+import org.powermock.reflect.Whitebox;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({LocacaoService.class})
@@ -173,7 +174,7 @@ public class LocacaoServiceTest {
 		//verificacao
 			Assert.fail();
 		} catch (LocadoraException e) {
-			Assert.assertThat(e.getMessage(), is("Usuário Negativado"));
+			Assert.assertThat(e.getMessage(), is("Usuario Negativado"));
 		}
 		
 		verify(spc).possuiNegativacao(usuario);
@@ -252,5 +253,18 @@ public class LocacaoServiceTest {
 		//verificacao
 		Assert.assertThat(locacao.getValor(), is(1.0));
 		PowerMockito.verifyPrivate(service).invoke("calcularValorLocacao", filmes);
+	}
+
+	@Test
+	public void deveCalcularValorAlocacao() throws Exception {
+		//cenário
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+
+		//ação
+		Double valor = (Double) Whitebox.invokeMethod(service, "calcularValorLocacao", filmes);
+
+		//verificação
+		Assert.assertThat(valor, is(4.0));
+
 	}
 }

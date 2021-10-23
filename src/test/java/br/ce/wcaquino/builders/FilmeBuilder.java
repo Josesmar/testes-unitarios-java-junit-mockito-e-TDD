@@ -34,9 +34,11 @@ public class FilmeBuilder {
 	public FilmeBuilder comValor(Double valor) {
 		filme.setPrecoLocacao(valor);
 		return this;
-	}
+	}		
 	
 	public Filme agora(){
 		return filme;
 	}
+	
+	
 }

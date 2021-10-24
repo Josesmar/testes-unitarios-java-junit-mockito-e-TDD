@@ -43,7 +43,7 @@ public class LocacaoService {
 		}
 		
 		if(negativado) {
-			throw new LocadoraException("Usuario Negativado");
+			throw new LocadoraException("Usuário Negativado");
 		}
 		
 		Locacao locacao = new Locacao();
@@ -53,7 +53,7 @@ public class LocacaoService {
 		locacao.setValor(calcularValorLocacao(filmes));
 		
 		//Entrega no dia seguinte
-		Date dataEntrega = new Date();
+		Date dataEntrega = obterData();
 		dataEntrega = adicionarDias(dataEntrega, 1);
 		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
 			dataEntrega = adicionarDias(dataEntrega, 1);
@@ -89,7 +89,7 @@ public class LocacaoService {
 	public void notificarAtrasos(){
 		List<Locacao> locacoes = dao.obterLocacoesPendentes();
 		for(Locacao locacao: locacoes) {
-			if(locacao.getDataRetorno().before(new Date())) {
+			if(locacao.getDataRetorno().before(obterData())) {
 				emailService.notificarAtraso(locacao.getUsuario());
 			}
 		}
@@ -99,7 +99,7 @@ public class LocacaoService {
 		Locacao novaLocacao = new Locacao();
 		novaLocacao.setUsuario(locacao.getUsuario());
 		novaLocacao.setFilmes(locacao.getFilmes());
-		novaLocacao.setDataLocacao(new Date());
+		novaLocacao.setDataLocacao(obterData());
 		novaLocacao.setDataRetorno(DataUtils.obterDataComDiferencaDias(dias));
 		novaLocacao.setValor(locacao.getValor() * dias);
 		dao.salvar(novaLocacao);

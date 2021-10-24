@@ -1,37 +1,51 @@
 package br.ce.wcaquino.servicos;
 
+import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
+import static br.ce.wcaquino.builders.FilmeBuilder.umFilmeSemEstoque;
+import static br.ce.wcaquino.builders.LocacaoBuilder.umLocacao;
+import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
+import static br.ce.wcaquino.matchers.MatchersProprios.caiNumaSegunda;
+import static br.ce.wcaquino.matchers.MatchersProprios.ehHoje;
+import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeComDiferencaDias;
+import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ErrorCollector;
+import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
 import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.runners.ParallelRunner;
 import br.ce.wcaquino.utils.DataUtils;
-import org.junit.*;
-import org.junit.rules.ErrorCollector;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
-import static br.ce.wcaquino.builders.FilmeBuilder.umFilmeSemEstoque;
-import static br.ce.wcaquino.builders.LocacaoBuilder.umLocacao;
-import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
-import static br.ce.wcaquino.matchers.MatchersProprios.*;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
-@RunWith(ParallelRunner.class)
+@PowerMockIgnore({"jdk.internal.reflect.*"})
 public class LocacaoServiceTest {
 
 	@InjectMocks @Spy
@@ -53,28 +67,35 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup(){
 		MockitoAnnotations.initMocks(this);
-		System.out.println("iniciando 2...");
+		System.out.println("Iniciando 2...");
+		CalculadoraTest.ordem.append("2");
 	}
-
+	
 	@After
-	public void tearDow(){
+	public void tearDown(){
 		System.out.println("finalizando 2...");
 	}
+	
+	@AfterClass
+	public static void tearDownClass(){
+		System.out.println(CalculadoraTest.ordem.toString());
+	}
+	
 	@Test
 	public void deveAlugarFilme() throws Exception {
 		//cenario
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
-		
-		Mockito.doReturn(DataUtils.obterData(28,4,2017)).when(service).obterData();
 
+		Mockito.doReturn(DataUtils.obterData(28, 4, 2017)).when(service).obterData();
+		
 		//acao
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 			
 		//verificacao
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
-		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(false));
+		error.checkThat(isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
+		error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
 	}
 	
 	@Test(expected = FilmeSemEstoqueException.class)
@@ -118,15 +139,14 @@ public class LocacaoServiceTest {
 		//cenario
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
-
-		Mockito.doReturn(DataUtils.obterData(29,4,2017)).when(service).obterData();
+		
+		Mockito.doReturn(DataUtils.obterData(29, 4, 2017)).when(service).obterData();
 		
 		//acao
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		//verificacao
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
-		
 	}
 	
 	@Test
@@ -134,6 +154,7 @@ public class LocacaoServiceTest {
 		//cenario
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		
 		when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
 		
 		//acao
@@ -142,8 +163,9 @@ public class LocacaoServiceTest {
 		//verificacao
 			Assert.fail();
 		} catch (LocadoraException e) {
-			Assert.assertThat(e.getMessage(), is("Usuario Negativado"));
+			Assert.assertThat(e.getMessage(), is("Usuário Negativado"));
 		}
+		
 		verify(spc).possuiNegativacao(usuario);
 	}
 	
@@ -207,18 +229,17 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	public void deveCalcularValorAlocacao() throws Exception {
-		//cenário
+	public void deveCalcularValorLocacao() throws Exception{
+		//cenario
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
-
-		//ação
+		
+		//acao
 		Class<LocacaoService> clazz = LocacaoService.class;
 		Method metodo = clazz.getDeclaredMethod("calcularValorLocacao", List.class);
 		metodo.setAccessible(true);
 		Double valor = (Double) metodo.invoke(service, filmes);
-
-		//verificação
+		
+		//verificacao
 		Assert.assertThat(valor, is(4.0));
-
 	}
 }

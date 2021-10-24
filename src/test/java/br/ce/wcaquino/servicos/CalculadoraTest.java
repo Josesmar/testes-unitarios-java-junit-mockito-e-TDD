@@ -1,11 +1,17 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.runners.ParallelRunner;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.JUnit4;
 
+@RunWith(ParallelRunner.class)
 public class CalculadoraTest {
 	
 	private Calculadora calc;
@@ -13,6 +19,12 @@ public class CalculadoraTest {
 	@Before
 	public void setup(){
 		calc = new Calculadora();
+		System.out.println("iniciando...");
+	}
+
+	@After
+	public void tearDow(){
+		System.out.println("finalizando...");
 	}
 
 	@Test
@@ -62,5 +74,15 @@ public class CalculadoraTest {
 		int b = 0;
 		
 		calc.divide(a, b);
+	}
+	
+	@Test
+	public void deveDividir(){
+		String a = "6";
+		String b = "3";
+		
+		int resultado = calc.divide(a, b);
+		
+		Assert.assertEquals(2, resultado);
 	}
 }
